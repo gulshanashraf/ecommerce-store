@@ -1,25 +1,9 @@
-# Fashion Store — Premium Clothing E-Commerce Frontend
+# Fashion Store — Premium  E-Commerce Frontend
 
-A React (JS/JSX, no TypeScript) storefront built with Vite, Tailwind CSS,
+A React storefront built with Vite, Tailwind CSS,
 Axios and React Router, connected to your existing Node/Express/MongoDB
 backend.
 
-## Getting started
-
-```bash
-npm install
-npm run dev
-```
-
-No `.env` files are used in this project (by request). The backend base URL
-is a single constant at the top of `src/services/productService.js`:
-
-```js
-const BASE_URL = "https://product-mvc-production-4b95.up.railway.app";
-```
-
-To point at a local backend instead, change that one line — nothing else
-in the app references the URL directly.
 
 ## A note on backend inspection
 
@@ -74,6 +58,3 @@ src/
 ```bash
 npm run build
 ```
-
-Outputs to `dist/`, ready to deploy to Vercel or any static host. Make sure
-the backend's CORS configuration allows your deployed frontend's domain.
