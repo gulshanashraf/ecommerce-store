@@ -1,0 +1,2 @@
+# ecommerce-store
+A modern and responsive full-stack clothing e-commerce store built with React, Vite, Tailwind CSS, and Bootstrap. Includes product CRUD operations using REST APIs, MongoDB database integration, product search, categories, favorites, shopping cart, responsive UI, and a professional fashion-store design. Backend is built with Node.js, Express.js, and Mongoose and deployed on Railway.
