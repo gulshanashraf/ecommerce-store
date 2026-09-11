@@ -85,7 +85,7 @@ export default function ProductCard({ product, onEdit, onDelete }) {
           )}
         </div>
 
-        <div className="mt-3 flex w-full items-center gap-1.5">
+    <div className="mt-3 flex w-full flex-wrap items-center gap-1.5">
           <button
             onClick={handleAddToCart}
             disabled={outOfStock}
