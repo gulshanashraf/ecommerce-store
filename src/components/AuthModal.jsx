@@ -18,21 +18,19 @@ export default function AuthModal({
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] =
-    useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [showPassword, setShowPassword] =
-    useState(false);
-
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const isSignup = mode === "signup";
 
-   const API_URL = "https://product-mvc-production-4b95.up.railway.app";
+  // Railway Backend URL
+  const API_URL =
+    "https://product-mvc-production-4b95.up.railway.app";
 
   // =====================================================
   // HANDLE SUBMIT
@@ -93,15 +91,7 @@ export default function AuthModal({
         // =================================================
 
         if (!signupResponse.ok) {
-          /*
-            Teacher backend duplicate username par
-            500 return karta hai.
-
-            Isliye same username/password se login
-            karke check kar rahe hain ke account already
-            exist karta hai ya nahi.
-          */
-
+          // Duplicate username
           if (signupResponse.status === 500) {
             try {
               const checkLoginResponse = await fetch(
@@ -132,7 +122,7 @@ export default function AuthModal({
                 return;
               }
             } catch {
-              // Ignore checking error
+              // Ignore login checking error
             }
           }
 
@@ -147,18 +137,6 @@ export default function AuthModal({
         // =================================================
         // SIGNUP SUCCESS
         // =================================================
-        /*
-          Teacher backend signup ke baad sirf:
-
-          {
-            message: "User created successfully"
-          }
-
-          return karta hai.
-
-          Isliye signup ke baad automatically login
-          request bhej rahe hain.
-        */
 
         const loginResponse = await fetch(
           `${API_URL}/user/login`,
@@ -241,25 +219,12 @@ export default function AuthModal({
       // =================================================
 
       if (!loginResponse.ok) {
-        /*
-          Teacher backend 401 par:
-
-          Invalid credentials
-
-          return karta hai.
-
-          Isliye frontend mein generic login error
-          show kar rahe hain.
-        */
-
         if (loginResponse.status === 401) {
-          setError(
-            "Invalid username or password."
-          );
+          setError("Invalid username or password.");
+        } else if (loginResponse.status === 500) {
+          setError("Server error. Please try again.");
         } else {
-          setError(
-            "Your account is not created yet. Please sign up first."
-          );
+          setError("Login failed. Please try again.");
         }
 
         return;
@@ -301,7 +266,6 @@ export default function AuthModal({
       setUsername("");
       setPassword("");
       setConfirmPassword("");
-
     } catch (err) {
       console.error("Authentication Error:", err);
 
@@ -380,10 +344,7 @@ export default function AuthModal({
 
         {error && (
           <div className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
-
-            <div>
-              {error}
-            </div>
+            <div>{error}</div>
 
             {/* SIGNUP ERROR -> LOGIN */}
 
@@ -445,6 +406,9 @@ export default function AuthModal({
                   setUsername(e.target.value)
                 }
                 placeholder="Enter your username"
+                autoComplete={
+                  isSignup ? "username" : "username"
+                }
                 className="w-full bg-transparent text-sm text-gray-800 outline-none"
                 disabled={loading}
               />
@@ -479,6 +443,11 @@ export default function AuthModal({
                   setPassword(e.target.value)
                 }
                 placeholder="Enter your password"
+                autoComplete={
+                  isSignup
+                    ? "new-password"
+                    : "current-password"
+                }
                 className="w-full bg-transparent text-sm text-gray-800 outline-none"
                 disabled={loading}
               />
@@ -532,6 +501,7 @@ export default function AuthModal({
                     )
                   }
                   placeholder="Confirm your password"
+                  autoComplete="new-password"
                   className="w-full bg-transparent text-sm text-gray-800 outline-none"
                   disabled={loading}
                 />
@@ -588,7 +558,9 @@ export default function AuthModal({
 
               <button
                 type="button"
-                onClick={() => handleSwitch("login")}
+                onClick={() =>
+                  handleSwitch("login")
+                }
                 className="font-bold text-[#7C0000] hover:underline"
               >
                 Login
@@ -600,7 +572,9 @@ export default function AuthModal({
 
               <button
                 type="button"
-                onClick={() => handleSwitch("signup")}
+                onClick={() =>
+                  handleSwitch("signup")
+                }
                 className="font-bold text-[#7C0000] hover:underline"
               >
                 Sign Up
