@@ -32,7 +32,7 @@ export default function AuthModal({
 
   const isSignup = mode === "signup";
 
-  const API_URL = "http://localhost:5050";
+  const API_URL = "https://product-mvc-production-4b95.up.railway.app";
 
   // =====================================================
   // HANDLE SUBMIT
