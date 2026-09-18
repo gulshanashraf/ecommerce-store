@@ -32,7 +32,7 @@ export default function Signup() {
 
     try {
       const response = await fetch(
-        "http://localhost:5050/user/createuser",
+        "https://product-mvc-production-4b95.up.railway.app/user/createuser",
         {
           method: "POST",
           headers: {
