@@ -1,6 +1,6 @@
-# Fashion Store — Premium  E-Commerce Frontend
+# Fashion Store — Premium Clothing E-Commerce Frontend
 
-A React storefront built with Vite, Tailwind CSS,
+A React (JS/JSX, no TypeScript) storefront built with Vite, Tailwind CSS,
 Axios and React Router, connected to your existing Node/Express/MongoDB
 backend.
 
@@ -58,3 +58,6 @@ src/
 ```bash
 npm run build
 ```
+
+Outputs to `dist/`, ready to deploy to Vercel or any static host. Make sure
+the backend's CORS configuration allows your deployed frontend's domain.
