@@ -21,7 +21,8 @@ export default function AuthModal({
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -91,39 +92,20 @@ export default function AuthModal({
         // =================================================
 
         if (!signupResponse.ok) {
-          // Duplicate username
+          // Username already exists
+          if (signupResponse.status === 409) {
+            setError(
+              "Your account already exists. Please login."
+            );
+            return;
+          }
+
+          // Other actual server error
           if (signupResponse.status === 500) {
-            try {
-              const checkLoginResponse = await fetch(
-                `${API_URL}/user/login`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    username: cleanUsername,
-                    password: password,
-                  }),
-                }
-              );
-
-              const checkLoginData =
-                await checkLoginResponse.json();
-
-              if (
-                checkLoginResponse.ok &&
-                checkLoginData.token
-              ) {
-                setError(
-                  "Your account already exists. Please login."
-                );
-
-                return;
-              }
-            } catch {
-              // Ignore login checking error
-            }
+            setError(
+              "Unable to create account. Please try again."
+            );
+            return;
           }
 
           setError(
@@ -135,7 +117,7 @@ export default function AuthModal({
         }
 
         // =================================================
-        // SIGNUP SUCCESS
+        // SIGNUP SUCCESS → AUTOMATIC LOGIN
         // =================================================
 
         const loginResponse = await fetch(
@@ -155,13 +137,25 @@ export default function AuthModal({
         const loginData = await loginResponse.json();
 
         // =================================================
-        // AUTO LOGIN FAILED
+        // AUTO LOGIN ERROR
         // =================================================
 
         if (!loginResponse.ok || !loginData.token) {
-          setError(
-            "Account created, but automatic login failed. Please login."
-          );
+          if (loginResponse.status === 404) {
+            setError(
+              "Your account does not exist. Please sign up first."
+            );
+          } else if (loginResponse.status === 401) {
+            setError("Your password is wrong.");
+          } else if (loginResponse.status === 500) {
+            setError(
+              "Account created, but login failed. Please login manually."
+            );
+          } else {
+            setError(
+              "Account created, but login failed. Please login manually."
+            );
+          }
 
           return;
         }
@@ -219,13 +213,40 @@ export default function AuthModal({
       // =================================================
 
       if (!loginResponse.ok) {
-        if (loginResponse.status === 401) {
-          setError("Invalid username or password.");
-        } else if (loginResponse.status === 500) {
-          setError("Server error. Please try again.");
-        } else {
-          setError("Login failed. Please try again.");
+        // Username does not exist
+        if (loginResponse.status === 404) {
+          setError(
+            "Your name is wrong. Please sign up first."
+          );
+          return;
         }
+
+        // Username exists but password is wrong
+        if (loginResponse.status === 401) {
+          setError("Your password is wrong.");
+          return;
+        }
+
+        // Missing fields
+        if (loginResponse.status === 400) {
+          setError(
+            "Please enter your username and password."
+          );
+          return;
+        }
+
+        // Actual server error
+        if (loginResponse.status === 500) {
+          setError(
+            "Server error. Please try again."
+          );
+          return;
+        }
+
+        setError(
+          loginData.error ||
+            "Login failed. Please try again."
+        );
 
         return;
       }
@@ -238,7 +259,6 @@ export default function AuthModal({
         setError(
           "Login failed. Token was not received."
         );
-
         return;
       }
 
@@ -307,10 +327,7 @@ export default function AuthModal({
         className="relative w-full max-w-md rounded-3xl bg-white p-7 shadow-2xl border border-[#7C0000]/10 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-
-        {/* =================================================
-            CLOSE BUTTON
-        ================================================= */}
+        {/* CLOSE BUTTON */}
 
         <button
           type="button"
@@ -320,9 +337,7 @@ export default function AuthModal({
           <X size={19} />
         </button>
 
-        {/* =================================================
-            TITLE
-        ================================================= */}
+        {/* TITLE */}
 
         <div className="mb-7 text-center pr-7">
           <h2 className="text-3xl font-bold text-[#7C0000]">
@@ -338,15 +353,13 @@ export default function AuthModal({
           </p>
         </div>
 
-        {/* =================================================
-            ERROR MESSAGE
-        ================================================= */}
+        {/* ERROR MESSAGE */}
 
         {error && (
           <div className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
             <div>{error}</div>
 
-            {/* SIGNUP ERROR -> LOGIN */}
+            {/* SIGNUP → LOGIN */}
 
             {isSignup &&
               error.includes("already exists") && (
@@ -359,10 +372,10 @@ export default function AuthModal({
                 </button>
               )}
 
-            {/* LOGIN ERROR -> SIGNUP */}
+            {/* LOGIN → SIGNUP */}
 
             {!isSignup &&
-              error.includes("not created yet") && (
+              error.includes("sign up first") && (
                 <button
                   type="button"
                   onClick={() => handleSwitch("signup")}
@@ -374,18 +387,13 @@ export default function AuthModal({
           </div>
         )}
 
-        {/* =================================================
-            FORM
-        ================================================= */}
+        {/* FORM */}
 
         <form
           onSubmit={handleSubmit}
           className="space-y-5"
         >
-
-          {/* =================================================
-              USERNAME
-          ================================================= */}
+          {/* USERNAME */}
 
           <div>
             <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -393,7 +401,6 @@ export default function AuthModal({
             </label>
 
             <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3 transition focus-within:border-[#7C0000] focus-within:ring-2 focus-within:ring-[#7C0000]/10">
-
               <User
                 size={19}
                 className="shrink-0 text-[#7C0000]"
@@ -406,19 +413,14 @@ export default function AuthModal({
                   setUsername(e.target.value)
                 }
                 placeholder="Enter your username"
-                autoComplete={
-                  isSignup ? "username" : "username"
-                }
+                autoComplete="username"
                 className="w-full bg-transparent text-sm text-gray-800 outline-none"
                 disabled={loading}
               />
-
             </div>
           </div>
 
-          {/* =================================================
-              PASSWORD
-          ================================================= */}
+          {/* PASSWORD */}
 
           <div>
             <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -426,7 +428,6 @@ export default function AuthModal({
             </label>
 
             <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3 transition focus-within:border-[#7C0000] focus-within:ring-2 focus-within:ring-[#7C0000]/10">
-
               <Lock
                 size={19}
                 className="shrink-0 text-[#7C0000]"
@@ -434,9 +435,7 @@ export default function AuthModal({
 
               <input
                 type={
-                  showPassword
-                    ? "text"
-                    : "password"
+                  showPassword ? "text" : "password"
                 }
                 value={password}
                 onChange={(e) =>
@@ -467,13 +466,10 @@ export default function AuthModal({
                   <Eye size={19} />
                 )}
               </button>
-
             </div>
           </div>
 
-          {/* =================================================
-              CONFIRM PASSWORD
-          ================================================= */}
+          {/* CONFIRM PASSWORD */}
 
           {isSignup && (
             <div>
@@ -482,7 +478,6 @@ export default function AuthModal({
               </label>
 
               <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3 transition focus-within:border-[#7C0000] focus-within:ring-2 focus-within:ring-[#7C0000]/10">
-
                 <Lock
                   size={19}
                   className="shrink-0 text-[#7C0000]"
@@ -521,14 +516,11 @@ export default function AuthModal({
                     <Eye size={19} />
                   )}
                 </button>
-
               </div>
             </div>
           )}
 
-          {/* =================================================
-              SUBMIT BUTTON
-          ================================================= */}
+          {/* SUBMIT BUTTON */}
 
           <button
             type="submit"
@@ -543,15 +535,11 @@ export default function AuthModal({
               ? "Create Account"
               : "Login"}
           </button>
-
         </form>
 
-        {/* =================================================
-            SWITCH LOGIN / SIGNUP
-        ================================================= */}
+        {/* SWITCH LOGIN / SIGNUP */}
 
         <div className="mt-6 text-center text-sm text-gray-600">
-
           {isSignup ? (
             <>
               Already have an account?{" "}
@@ -581,9 +569,7 @@ export default function AuthModal({
               </button>
             </>
           )}
-
         </div>
-
       </div>
     </div>
   );
