@@ -25,14 +25,18 @@ export default function ProductCard({ product, onEdit, onDelete }) {
 
   const handleAddToCart = () => {
     if (outOfStock) return;
+
     addItem(product, 1);
     showToast(`${product.name} added to cart`);
+
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1800);
   };
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-maroon/15 bg-white shadow-[var(--shadow-color-card)] transition-all duration-300 hover:-translate-y-1 hover:border-maroon/30 hover:shadow-xl">
+      
+      {/* FAVORITE */}
       <button
         onClick={(e) => {
           e.preventDefault();
@@ -46,18 +50,24 @@ export default function ProductCard({ product, onEdit, onDelete }) {
         <Heart size={14} fill={favored ? "currentColor" : "none"} />
       </button>
 
+      {/* DISCOUNT */}
       {product.discountPercent && (
         <span className="absolute left-3 top-3 z-10 rounded-full bg-maroon px-2.5 py-1 text-xs font-semibold text-cream-white">
           {product.discountPercent}% OFF
         </span>
       )}
 
-      <Link to={`/products/${product.id}`} className="relative block w-full">
+      {/* PRODUCT IMAGE */}
+      <Link
+        to={`/products/${product.id}`}
+        className="relative block w-full"
+      >
         <ProductImage
           src={product.image}
           alt={product.name}
           className="aspect-square w-full overflow-hidden rounded-t-2xl transition-transform duration-300 group-hover:scale-[1.03]"
         />
+
         {outOfStock && (
           <span className="absolute inset-x-0 bottom-0 bg-maroon-deep/90 py-1.5 text-center text-[11px] font-medium tracking-wide text-cream-white">
             Out of Stock
@@ -65,65 +75,100 @@ export default function ProductCard({ product, onEdit, onDelete }) {
         )}
       </Link>
 
+      {/* PRODUCT INFO */}
       <div className="flex flex-1 flex-col items-center px-4 pb-4 pt-3 text-center">
+        
         <p className="text-[11px] font-medium uppercase tracking-wide text-maroon/60">
           {product.category}
         </p>
+
         <Link to={`/products/${product.id}`}>
           <h3 className="mt-0.5 line-clamp-1 font-display text-lg text-ink hover:text-maroon">
             {product.name}
           </h3>
         </Link>
+
         {product.description && (
-          <p className="mt-0.5 line-clamp-1 text-xs text-ink/50">{product.description}</p>
+          <p className="mt-0.5 line-clamp-1 text-xs text-ink/50">
+            {product.description}
+          </p>
         )}
 
+        {/* PRICE */}
         <div className="mt-1.5 flex items-baseline gap-2">
-          <span className="font-semibold text-maroon-deep">{formatPKR(product.price)}</span>
+          <span className="font-semibold text-maroon-deep">
+            {formatPKR(product.price)}
+          </span>
+
           {product.oldPrice && (
-            <span className="text-xs text-ink/40 line-through">{formatPKR(product.oldPrice)}</span>
+            <span className="text-xs text-ink/40 line-through">
+              {formatPKR(product.oldPrice)}
+            </span>
           )}
         </div>
 
-        <div className="mt-3 flex w-full items-center gap-1.5">
+        {/* =====================================================
+            ACTIONS
+            DESKTOP: Add + Eye + Edit + Delete in ONE ROW
+            MOBILE: Add on top, icons in SECOND ROW
+            ===================================================== */}
+
+        <div className="mt-3 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-1.5">
+          
+          {/* ADD TO CART */}
           <button
             onClick={handleAddToCart}
             disabled={outOfStock}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold tracking-wide transition disabled:cursor-not-allowed disabled:bg-ink/20 disabled:text-cream-white ${
-              justAdded ? "bg-maroon-light text-cream-white" : "bg-maroon text-cream-white hover:bg-maroon-deep"
-            }`}
+            className={`flex w-full items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold tracking-wide transition sm:flex-1 ${
+              justAdded
+                ? "bg-maroon-light text-cream-white"
+                : "bg-maroon text-cream-white hover:bg-maroon-deep"
+            } disabled:cursor-not-allowed disabled:bg-ink/20 disabled:text-cream-white`}
           >
             {justAdded ? (
               <>
-                <Check size={14} /> Added
+                <Check size={14} />
+                Added
               </>
             ) : (
               <>
-                <ShoppingBag size={14} /> Add
+                <ShoppingBag size={14} />
+                Add
               </>
             )}
           </button>
-          <Link
-            to={`/products/${product.id}`}
-            aria-label="View details"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
-          >
-            <Eye size={14} />
-          </Link>
-          <button
-            onClick={() => onEdit?.(product)}
-            aria-label="Edit product"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
-          >
-            <Pencil size={13} />
-          </button>
-          <button
-            onClick={() => onDelete?.(product)}
-            aria-label="Delete product"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
-          >
-            <Trash2 size={13} />
-          </button>
+
+          {/* MOBILE ICON ROW + DESKTOP SAME ROW */}
+          <div className="flex w-full items-center justify-center gap-2 sm:w-auto sm:gap-1.5">
+            
+            {/* VIEW */}
+            <Link
+              to={`/products/${product.id}`}
+              aria-label="View details"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
+            >
+              <Eye size={14} />
+            </Link>
+
+            {/* EDIT */}
+            <button
+              onClick={() => onEdit?.(product)}
+              aria-label="Edit product"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
+            >
+              <Pencil size={13} />
+            </button>
+
+            {/* DELETE */}
+            <button
+              onClick={() => onDelete?.(product)}
+              aria-label="Delete product"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
+            >
+              <Trash2 size={13} />
+            </button>
+
+          </div>
         </div>
       </div>
     </div>

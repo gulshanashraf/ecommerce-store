@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -41,13 +42,14 @@ export default function Navbar({
 
   const isHome = location.pathname === "/";
 
-  // User ke naam ka first letter
   const userInitial = user?.username
     ? user.username.charAt(0).toUpperCase()
     : "";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24);
+    };
 
     onScroll();
 
@@ -61,8 +63,10 @@ export default function Navbar({
   const submitSearch = (e) => {
     e.preventDefault();
 
+    const searchValue = query.trim();
+
     navigate(
-      `/products?search=${encodeURIComponent(query)}`
+      `/products?search=${encodeURIComponent(searchValue)}`
     );
 
     setMobileOpen(false);
@@ -79,7 +83,7 @@ export default function Navbar({
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 w-full overflow-visible transition-all duration-300 ${
         solid
           ? "border-b border-white/20 shadow-2xl backdrop-blur-md"
           : "bg-transparent"
@@ -90,40 +94,90 @@ export default function Navbar({
           : "transparent",
       }}
     >
-      <div className="container-page flex h-[72px] items-center gap-4 py-3 md:h-20 text-white">
+      {/* =================================================
+          MAIN NAVBAR
+      ================================================= */}
 
-        {/* ========================= */}
-        {/* BRAND */}
-        {/* ========================= */}
+      <div
+        className="
+          container-page
+          mx-auto
+          flex
+          h-[68px]
+          w-full
+          max-w-full
+          items-center
+          gap-2
+          px-3
+          py-2
+          text-white
+          sm:h-[72px]
+          sm:gap-3
+          sm:px-4
+          md:h-20
+          md:gap-4
+          md:px-0
+          md:py-3
+        "
+      >
+        {/* =================================================
+            BRAND
+        ================================================= */}
 
         <Link
           to="/"
-          className="flex shrink-0 items-baseline gap-1.5"
+          onClick={() => setMobileOpen(false)}
+          className="
+            flex
+            min-w-0
+            shrink
+            items-baseline
+            gap-1
+            overflow-hidden
+            whitespace-nowrap
+            sm:gap-1.5
+          "
         >
-          <span className="font-display text-2xl font-bold uppercase tracking-[0.08em] md:text-3xl drop-shadow-md text-white">
+          <span
+            className="
+              font-display
+              text-[17px]
+              font-bold
+              uppercase
+              tracking-[0.04em]
+              text-white
+              drop-shadow-md
+              sm:text-xl
+              sm:tracking-[0.06em]
+              md:text-3xl
+              md:tracking-[0.08em]
+            "
+          >
             Fashion Store
           </span>
         </Link>
 
-        {/* ========================= */}
-        {/* DESKTOP NAV LINKS */}
-        {/* ========================= */}
+        {/* =================================================
+            DESKTOP NAV LINKS
+        ================================================= */}
 
         <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.label}
               to={link.to}
-              className="text-sm font-semibold tracking-wide transition text-white drop-shadow hover:text-white/80 scale-105"
+              className="whitespace-nowrap text-sm font-semibold tracking-wide text-white drop-shadow transition hover:scale-105 hover:text-white/80"
             >
               {link.label}
             </Link>
           ))}
 
-          {/* Add Product */}
+          {/* ADD PRODUCT */}
+
           <button
+            type="button"
             onClick={onAddProduct}
-            className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-5 py-2 text-sm font-bold tracking-wide transition border-2 border-white bg-white/25 text-white hover:bg-white/35 backdrop-blur-md shadow-[0_8px_25px_rgba(0,0,0,0.3)] hover:scale-105"
+            className="flex items-center gap-1.5 whitespace-nowrap rounded-full border-2 border-white bg-white/25 px-5 py-2 text-sm font-bold tracking-wide text-white shadow-[0_8px_25px_rgba(0,0,0,0.3)] backdrop-blur-md transition hover:scale-105 hover:bg-white/35"
           >
             <Plus
               size={16}
@@ -133,115 +187,195 @@ export default function Navbar({
           </button>
         </nav>
 
-        {/* ========================= */}
-        {/* SEARCH */}
-        {/* ========================= */}
+        {/* =================================================
+            DESKTOP SEARCH
+        ================================================= */}
 
         <form
           onSubmit={submitSearch}
-          className="hidden max-w-xs flex-1 items-center gap-2 rounded-full px-4.5 py-2.5 backdrop-blur-md md:flex transition border-2 border-white bg-black/30 shadow-[0_8px_25px_rgba(0,0,0,0.3)]"
+          className="
+            hidden
+            max-w-xs
+            flex-1
+            items-center
+            gap-2
+            rounded-full
+            border-2
+            border-white
+            bg-black/30
+            px-4
+            py-2.5
+            shadow-[0_8px_25px_rgba(0,0,0,0.3)]
+            backdrop-blur-md
+            transition
+            md:flex
+          "
         >
           <Search
             size={16}
-            className="text-white stroke-[2.5]"
+            className="shrink-0 text-white stroke-[2.5]"
           />
 
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search..."
-            className="w-full bg-transparent text-sm outline-none placeholder:text-white placeholder:font-semibold text-white font-medium"
+            className="w-full min-w-0 bg-transparent text-sm font-medium text-white outline-none placeholder:font-semibold placeholder:text-white"
           />
         </form>
 
-        {/* ========================= */}
-        {/* ACTIONS */}
-        {/* ========================= */}
+        {/* =================================================
+            ACTIONS
+        ================================================= */}
 
-        <div className="ml-auto flex shrink-0 items-center gap-3 md:gap-4">
+        <div
+          className="
+            ml-auto
+            flex
+            shrink-0
+            items-center
+            gap-1.5
+            sm:gap-2
+            md:gap-4
+          "
+        >
+          {/* =================================================
+              FAVORITES
+          ================================================= */}
 
-          {/* FAVORITES */}
           <Link
             to="/favorites"
             aria-label="Favorites"
-            className="relative flex h-11 w-11 items-center justify-center rounded-full transition bg-black/35 border-2 border-white text-white shadow-[0_8px_25px_rgba(0,0,0,0.3)] hover:bg-black/50 hover:scale-110"
+            onClick={() => setMobileOpen(false)}
+            className="
+              relative
+              flex
+              h-9
+              w-9
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              border-2
+              border-white
+              bg-black/35
+              text-white
+              shadow-[0_8px_25px_rgba(0,0,0,0.3)]
+              transition
+              hover:scale-110
+              hover:bg-black/50
+              sm:h-10
+              sm:w-10
+              md:h-11
+              md:w-11
+            "
           >
             <Heart
-              size={20}
+              size={18}
               strokeWidth={2.5}
-              className="drop-shadow-md"
+              className="drop-shadow-md sm:size-[19px] md:size-[20px]"
             />
 
             {favCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[11px] font-extrabold text-[#7C0000] shadow-md">
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[9px] font-extrabold text-[#7C0000] shadow-md sm:h-5 sm:w-5 sm:text-[11px]">
                 {favCount}
               </span>
             )}
           </Link>
 
-          {/* CART */}
+          {/* =================================================
+              CART
+          ================================================= */}
+
           <button
+            type="button"
             onClick={openCart}
             aria-label="Cart"
-            className="relative flex h-11 w-11 items-center justify-center rounded-full transition bg-[#7C0000] border-2 border-white text-white shadow-[0_8px_25px_rgba(0,0,0,0.3)] hover:bg-[#9E1A1A] hover:scale-110"
+            className="
+              relative
+              flex
+              h-9
+              w-9
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              border-2
+              border-white
+              bg-[#7C0000]
+              text-white
+              shadow-[0_8px_25px_rgba(0,0,0,0.3)]
+              transition
+              hover:scale-110
+              hover:bg-[#9E1A1A]
+              sm:h-10
+              sm:w-10
+              md:h-11
+              md:w-11
+            "
           >
             <ShoppingBag
-              size={19}
+              size={18}
               strokeWidth={2.5}
-              className="drop-shadow-md"
+              className="drop-shadow-md sm:size-[19px]"
             />
 
             {itemCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[11px] font-extrabold text-[#7C0000] shadow-md">
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[9px] font-extrabold text-[#7C0000] shadow-md sm:h-5 sm:w-5 sm:text-[11px]">
                 {itemCount}
               </span>
             )}
           </button>
 
-          {/* ========================= */}
-          {/* AUTH */}
-          {/* ========================= */}
+          {/* =================================================
+              DESKTOP AUTH
+          ================================================= */}
 
           {!user ? (
             <>
               {/* LOGIN */}
+
               <button
+                type="button"
                 onClick={onLogin}
-                className="hidden sm:flex items-center justify-center rounded-full border-2 border-white px-4 py-2 text-sm font-bold text-white transition hover:bg-white hover:text-[#7C0000] hover:scale-105"
+                className="hidden items-center justify-center whitespace-nowrap rounded-full border-2 border-white px-4 py-2 text-sm font-bold text-white transition hover:scale-105 hover:bg-white hover:text-[#7C0000] sm:flex"
               >
                 Login
               </button>
 
               {/* SIGN UP */}
+
               <button
+                type="button"
                 onClick={onSignup}
-                className="hidden sm:flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-bold text-[#7C0000] transition hover:bg-white/90 hover:scale-105 shadow-lg"
+                className="hidden items-center justify-center whitespace-nowrap rounded-full bg-white px-4 py-2 text-sm font-bold text-[#7C0000] shadow-lg transition hover:scale-105 hover:bg-white/90 sm:flex"
               >
                 Sign Up
               </button>
             </>
           ) : (
-            /* ========================= */
-            /* LOGGED IN DP */
-            /* ========================= */
+            /* =================================================
+               DESKTOP PROFILE
+            ================================================= */
 
             <div className="relative hidden sm:block">
-
               <button
+                type="button"
                 onClick={() =>
                   setProfileOpen((v) => !v)
                 }
                 aria-label="Profile"
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#7C0000] text-lg font-extrabold uppercase shadow-lg transition hover:scale-110"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg font-extrabold uppercase text-[#7C0000] shadow-lg transition hover:scale-110 md:h-11 md:w-11"
               >
                 {userInitial}
               </button>
 
               {/* PROFILE DROPDOWN */}
-              {profileOpen && (
-                <div className="absolute right-0 top-14 w-56 rounded-2xl bg-white p-3 shadow-2xl border border-gray-100">
 
+              {profileOpen && (
+                <div className="absolute right-0 top-14 z-[70] w-56 rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl">
                   {/* USER NAME */}
+
                   <div className="border-b border-gray-100 px-3 pb-3">
                     <p className="text-xs text-gray-400">
                       Logged in as
@@ -253,7 +387,9 @@ export default function Navbar({
                   </div>
 
                   {/* PROFILE */}
+
                   <button
+                    type="button"
                     onClick={() => {
                       setProfileOpen(false);
                       navigate("/profile");
@@ -265,63 +401,101 @@ export default function Navbar({
                   </button>
 
                   {/* LOGOUT */}
+
                   <button
+                    type="button"
                     onClick={handleLogout}
                     className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
                   >
                     <LogOut size={18} />
                     Logout
                   </button>
-
                 </div>
               )}
             </div>
           )}
 
-          {/* MOBILE MENU BUTTON */}
+          {/* =================================================
+              MOBILE MENU BUTTON
+          ================================================= */}
+
           <button
+            type="button"
             onClick={() =>
               setMobileOpen((v) => !v)
             }
-            className="flex h-11 w-11 items-center justify-center rounded-full lg:hidden transition bg-black/35 border-2 border-white text-white shadow-[0_8px_25px_rgba(0,0,0,0.3)]"
+            className="
+              flex
+              h-9
+              w-9
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              border-2
+              border-white
+              bg-black/35
+              text-white
+              shadow-[0_8px_25px_rgba(0,0,0,0.3)]
+              transition
+              hover:bg-black/50
+              sm:h-10
+              sm:w-10
+              lg:hidden
+            "
             aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? (
               <X
-                size={22}
+                size={20}
                 strokeWidth={2.5}
               />
             ) : (
               <Menu
-                size={22}
+                size={20}
                 strokeWidth={2.5}
               />
             )}
           </button>
-
         </div>
       </div>
 
-      {/* ========================= */}
-      {/* MOBILE MENU */}
-      {/* ========================= */}
+      {/* =================================================
+          MOBILE MENU
+      ================================================= */}
 
       {mobileOpen && (
         <div
-          className="border-t border-white/30 px-5 pb-5 pt-3 lg:hidden text-white shadow-2xl"
+          className="
+            max-h-[calc(100vh-68px)]
+            overflow-y-auto
+            border-t
+            border-white/30
+            px-4
+            pb-5
+            pt-3
+            text-white
+            shadow-2xl
+            sm:max-h-[calc(100vh-72px)]
+            sm:px-5
+            lg:hidden
+          "
           style={{
             backgroundColor: "#7C0000",
           }}
         >
+          {/* =================================================
+              MOBILE SEARCH
+          ================================================= */}
 
-          {/* MOBILE SEARCH */}
           <form
             onSubmit={submitSearch}
-            className="mb-4 flex items-center gap-2 rounded-full border-2 border-white/50 bg-white/15 px-4 py-2.5 shadow-md"
+            className="mb-4 flex w-full items-center gap-2 rounded-full border-2 border-white/60 bg-white/15 px-4 py-2.5 shadow-md backdrop-blur-sm"
           >
             <Search
-              size={16}
-              className="text-white stroke-[2.5]"
+              size={17}
+              className="shrink-0 text-white stroke-[2.5]"
             />
 
             <input
@@ -330,13 +504,15 @@ export default function Navbar({
                 setQuery(e.target.value)
               }
               placeholder="Search..."
-              className="w-full bg-transparent text-sm text-white placeholder:text-white/80 outline-none font-semibold"
+              className="w-full min-w-0 bg-transparent text-sm font-semibold text-white outline-none placeholder:text-white/80"
             />
           </form>
 
-          {/* MOBILE LINKS */}
-          <div className="flex flex-col gap-1.5">
+          {/* =================================================
+              MOBILE LINKS
+          ================================================= */}
 
+          <div className="flex flex-col gap-1.5">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.label}
@@ -344,19 +520,23 @@ export default function Navbar({
                 onClick={() =>
                   setMobileOpen(false)
                 }
-                className="rounded-lg px-3 py-2.5 text-sm font-bold hover:bg-white/20 transition"
+                className="rounded-xl px-3 py-3 text-sm font-bold transition hover:bg-white/20"
               >
                 {link.label}
               </Link>
             ))}
 
-            {/* MOBILE ADD PRODUCT */}
+            {/* =================================================
+                MOBILE ADD PRODUCT
+            ================================================= */}
+
             <button
+              type="button"
               onClick={() => {
                 setMobileOpen(false);
                 onAddProduct();
               }}
-              className="mt-2 flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-white/25 px-4 py-2.5 text-sm font-bold hover:bg-white/35 transition border-2 border-white/50 shadow-md"
+              className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-full border-2 border-white/60 bg-white/25 px-4 py-2.5 text-sm font-bold shadow-md transition hover:bg-white/35"
             >
               <Plus
                 size={16}
@@ -365,40 +545,46 @@ export default function Navbar({
               Add Product
             </button>
 
-            {/* ========================= */}
-            {/* MOBILE AUTH */}
-            {/* ========================= */}
+            {/* =================================================
+                MOBILE AUTH
+            ================================================= */}
 
             {!user ? (
               <>
-                {/* MOBILE LOGIN */}
+                {/* LOGIN */}
+
                 <button
+                  type="button"
                   onClick={() => {
                     setMobileOpen(false);
                     onLogin();
                   }}
-                  className="mt-2 flex items-center justify-center rounded-full border-2 border-white px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white hover:text-[#7C0000]"
+                  className="mt-2 flex w-full items-center justify-center rounded-full border-2 border-white px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white hover:text-[#7C0000]"
                 >
                   Login
                 </button>
 
-                {/* MOBILE SIGNUP */}
+                {/* SIGN UP */}
+
                 <button
+                  type="button"
                   onClick={() => {
                     setMobileOpen(false);
                     onSignup();
                   }}
-                  className="flex items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-bold text-[#7C0000] transition hover:bg-white/90"
+                  className="flex w-full items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-bold text-[#7C0000] transition hover:bg-white/90"
                 >
                   Sign Up
                 </button>
               </>
             ) : (
               <>
-                {/* MOBILE USER */}
-                <div className="mt-3 flex items-center gap-3 rounded-2xl bg-white/15 p-3 border border-white/30">
+                {/* =================================================
+                    MOBILE USER
+                ================================================= */}
 
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#7C0000] text-lg font-extrabold uppercase">
+                <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/30 bg-white/15 p-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-lg font-extrabold uppercase text-[#7C0000]">
                     {userInitial}
                   </div>
 
@@ -411,35 +597,38 @@ export default function Navbar({
                       {user.username}
                     </p>
                   </div>
-
                 </div>
 
-                {/* MOBILE PROFILE */}
+                {/* PROFILE */}
+
                 <button
+                  type="button"
                   onClick={() => {
                     setMobileOpen(false);
                     navigate("/profile");
                   }}
-                  className="mt-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold hover:bg-white/20 transition"
+                  className="mt-2 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold transition hover:bg-white/20"
                 >
                   <User size={18} />
                   Profile
                 </button>
 
-                {/* MOBILE LOGOUT */}
+                {/* LOGOUT */}
+
                 <button
+                  type="button"
                   onClick={handleLogout}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-white hover:bg-white/20 transition"
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-white transition hover:bg-white/20"
                 >
                   <LogOut size={18} />
                   Logout
                 </button>
               </>
             )}
-
           </div>
         </div>
       )}
     </header>
   );
 }
+
