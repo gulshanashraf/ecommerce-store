@@ -1,16 +1,28 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, ShoppingBag, Pencil, Trash2, Eye, Check } from "lucide-react";
+import {
+  Heart,
+  ShoppingBag,
+  Pencil,
+  Trash2,
+  Eye,
+  Check,
+} from "lucide-react";
 import ProductImage from "./ProductImage";
 import { formatPKR } from "../utils/currency";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 import { useToast } from "../context/ToastContext";
 
-export default function ProductCard({ product, onEdit, onDelete }) {
+export default function ProductCard({
+  product,
+  onEdit,
+  onDelete,
+}) {
   const { addItem } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { showToast } = useToast();
+
   const [heartPop, setHeartPop] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
@@ -20,7 +32,10 @@ export default function ProductCard({ product, onEdit, onDelete }) {
   const handleFavorite = () => {
     toggleFavorite(product.id);
     setHeartPop(true);
-    setTimeout(() => setHeartPop(false), 350);
+
+    setTimeout(() => {
+      setHeartPop(false);
+    }, 350);
   };
 
   const handleAddToCart = () => {
@@ -30,34 +45,44 @@ export default function ProductCard({ product, onEdit, onDelete }) {
     showToast(`${product.name} added to cart`);
 
     setJustAdded(true);
-    setTimeout(() => setJustAdded(false), 1800);
+
+    setTimeout(() => {
+      setJustAdded(false);
+    }, 1800);
   };
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-maroon/15 bg-white shadow-[var(--shadow-color-card)] transition-all duration-300 hover:-translate-y-1 hover:border-maroon/30 hover:shadow-xl">
-      
+    <div className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-maroon/15 bg-white shadow-[var(--shadow-color-card)] transition-all duration-300 hover:-translate-y-1 hover:border-maroon/30 hover:shadow-xl">
+
       {/* FAVORITE */}
       <button
         onClick={(e) => {
           e.preventDefault();
           handleFavorite();
         }}
-        aria-label={favored ? "Remove from favorites" : "Add to favorites"}
-        className={`absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-maroon shadow transition hover:scale-105 ${
+        aria-label={
+          favored
+            ? "Remove from favorites"
+            : "Add to favorites"
+        }
+        className={`absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-maroon shadow transition hover:scale-105 sm:right-3 sm:top-3 ${
           heartPop ? "animate-heart" : ""
         }`}
       >
-        <Heart size={14} fill={favored ? "currentColor" : "none"} />
+        <Heart
+          size={14}
+          fill={favored ? "currentColor" : "none"}
+        />
       </button>
 
       {/* DISCOUNT */}
       {product.discountPercent && (
-        <span className="absolute left-3 top-3 z-10 rounded-full bg-maroon px-2.5 py-1 text-xs font-semibold text-cream-white">
+        <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-maroon px-2 py-1 text-[10px] font-semibold text-cream-white sm:left-3 sm:top-3 sm:px-2.5 sm:text-xs">
           {product.discountPercent}% OFF
         </span>
       )}
 
-      {/* PRODUCT IMAGE */}
+      {/* IMAGE */}
       <Link
         to={`/products/${product.id}`}
         className="relative block w-full"
@@ -76,50 +101,51 @@ export default function ProductCard({ product, onEdit, onDelete }) {
       </Link>
 
       {/* PRODUCT INFO */}
-      <div className="flex flex-1 flex-col items-center px-4 pb-4 pt-3 text-center">
-        
-        <p className="text-[11px] font-medium uppercase tracking-wide text-maroon/60">
+      <div className="flex flex-1 flex-col items-center px-2.5 pb-3 pt-2 text-center sm:px-4 sm:pb-4 sm:pt-3">
+
+        {/* CATEGORY */}
+        <p className="text-[9px] font-medium uppercase tracking-wide text-maroon/60 sm:text-[11px]">
           {product.category}
         </p>
 
-        <Link to={`/products/${product.id}`}>
-          <h3 className="mt-0.5 line-clamp-1 font-display text-lg text-ink hover:text-maroon">
+        {/* NAME */}
+        <Link
+          to={`/products/${product.id}`}
+          className="max-w-full"
+        >
+          <h3 className="mt-0.5 line-clamp-1 font-display text-base text-ink hover:text-maroon sm:text-lg">
             {product.name}
           </h3>
         </Link>
 
+        {/* DESCRIPTION */}
         {product.description && (
-          <p className="mt-0.5 line-clamp-1 text-xs text-ink/50">
+          <p className="mt-0.5 line-clamp-1 max-w-full text-[10px] text-ink/50 sm:text-xs">
             {product.description}
           </p>
         )}
 
         {/* PRICE */}
-        <div className="mt-1.5 flex items-baseline gap-2">
-          <span className="font-semibold text-maroon-deep">
+        <div className="mt-1 flex items-baseline gap-1.5 sm:mt-1.5 sm:gap-2">
+          <span className="text-sm font-semibold text-maroon-deep sm:text-base">
             {formatPKR(product.price)}
           </span>
 
           {product.oldPrice && (
-            <span className="text-xs text-ink/40 line-through">
+            <span className="text-[10px] text-ink/40 line-through sm:text-xs">
               {formatPKR(product.oldPrice)}
             </span>
           )}
         </div>
 
-        {/* =====================================================
-            ACTIONS
-            DESKTOP: Add + Eye + Edit + Delete in ONE ROW
-            MOBILE: Add on top, icons in SECOND ROW
-            ===================================================== */}
+        {/* ACTIONS */}
+        <div className="mt-2.5 flex w-full flex-col gap-1.5 sm:mt-3 sm:flex-row sm:items-center sm:gap-1.5">
 
-        <div className="mt-3 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-1.5">
-          
-          {/* ADD TO CART */}
+          {/* ADD */}
           <button
             onClick={handleAddToCart}
             disabled={outOfStock}
-            className={`flex w-full items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold tracking-wide transition sm:flex-1 ${
+            className={`flex w-full items-center justify-center gap-1.5 rounded-full px-2.5 py-2 text-[10px] font-semibold tracking-wide transition sm:flex-1 sm:px-3 sm:py-2 sm:text-xs ${
               justAdded
                 ? "bg-maroon-light text-cream-white"
                 : "bg-maroon text-cream-white hover:bg-maroon-deep"
@@ -127,45 +153,45 @@ export default function ProductCard({ product, onEdit, onDelete }) {
           >
             {justAdded ? (
               <>
-                <Check size={14} />
+                <Check size={13} />
                 Added
               </>
             ) : (
               <>
-                <ShoppingBag size={14} />
+                <ShoppingBag size={13} />
                 Add
               </>
             )}
           </button>
 
-          {/* MOBILE ICON ROW + DESKTOP SAME ROW */}
-          <div className="flex w-full items-center justify-center gap-2 sm:w-auto sm:gap-1.5">
-            
+          {/* ICONS */}
+          <div className="flex w-full items-center justify-center gap-1.5 sm:w-auto">
+
             {/* VIEW */}
             <Link
               to={`/products/${product.id}`}
               aria-label="View details"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white sm:h-9 sm:w-9"
             >
-              <Eye size={14} />
+              <Eye size={13} />
             </Link>
 
             {/* EDIT */}
             <button
               onClick={() => onEdit?.(product)}
               aria-label="Edit product"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white sm:h-9 sm:w-9"
             >
-              <Pencil size={13} />
+              <Pencil size={12} />
             </button>
 
             {/* DELETE */}
             <button
               onClick={() => onDelete?.(product)}
               aria-label="Delete product"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-maroon/25 text-maroon transition hover:bg-maroon hover:text-cream-white sm:h-9 sm:w-9"
             >
-              <Trash2 size={13} />
+              <Trash2 size={12} />
             </button>
 
           </div>
