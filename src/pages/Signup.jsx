@@ -32,7 +32,7 @@ export default function Signup() {
 
     try {
       const response = await fetch(
-        "https://product-mvc-production-4b95.up.railway.app/user/createuser",
+        "https://product-mvc.vercel.app/user/createuser",
         {
           method: "POST",
           headers: {
