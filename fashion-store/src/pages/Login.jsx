@@ -26,7 +26,7 @@ export default function Login() {
 
     try {
       const response = await fetch(
-     "https://product-mvc-production-4b95.up.railway.app/user/login",
+     "https://product-mvc.vercel.app/user/login",
         {
           method: "POST",
           headers: {
